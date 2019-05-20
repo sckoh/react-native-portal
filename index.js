@@ -6,6 +6,7 @@ import React from "react"; // peer-dependency
 import mitt from "mitt"; // DEPENDENCY #1
 import PropTypes from "prop-types"; // DEPENDENCY #2, sorta
 import uuidv1 from "uuid/v1";
+import { Map } from "immutable";
 
 if (!PropTypes) console.warn("<react-native-portal> no PropTypes available");
 
@@ -18,13 +19,13 @@ const oContextTypes = {
   portalGet: PropTypes.func
 };
 
-export class PortalProvider extends React.Component {
+export class PortalProvider extends React.PureComponent {
   _emitter: *;
 
   static childContextTypes = oContextTypes;
 
   state = {
-    portals: {}
+    portals: Map()
   };
 
   getChildContext() {
@@ -63,12 +64,9 @@ export class PortalProvider extends React.Component {
   // 변경
   portalSet = (name, value) => {
     this.setState(
-      {
-        portals: {
-          ...this.state.portals,
-          [name]: value
-        }
-      },
+      prevState => ({
+        portals: prevState.portals.set(name, value)
+      }),
       () => {
         if (this._emitter) {
           this._emitter.emit(name);
@@ -77,7 +75,7 @@ export class PortalProvider extends React.Component {
     );
   };
 
-  portalGet = name => this.state.portals[name] || null;
+  portalGet = name => this.state.portals.get(name) || null;
 
   // 변경
   render() {
@@ -153,7 +151,9 @@ export class WhitePortal extends React.PureComponent {
     portalUnsub && portalUnsub(name, this.forceUpdater);
   }
 
-  forceUpdater = () => this.forceUpdate();
+  forceUpdater = () => {
+    return this.forceUpdate();
+  };
 
   render() {
     const { name, children, childrenProps } = this.props;
@@ -171,9 +171,13 @@ export class WhitePortals extends React.PureComponent {
   render() {
     return (
       <PortalsContext.Consumer>
-        {portals =>
-          Object.keys(portals).map(key => <WhitePortal key={key} name={key} />)
-        }
+        {portals => {
+          const component = [];
+          portals.forEach((value, key) => {
+            component.push(<WhitePortal key={key} name={key} />);
+          });
+          return component;
+        }}
       </PortalsContext.Consumer>
     );
   }

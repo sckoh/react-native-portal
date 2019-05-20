@@ -28,6 +28,7 @@
   "homepage": "https://github.com/zenyr/react-native-portal",
   "license": "MIT",
   "dependencies": {
+    "immutable": "^4.0.0-rc.12",
     "mitt": "*",
     "prop-types": "*",
     "react": "*"
