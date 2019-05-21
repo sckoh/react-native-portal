@@ -6,7 +6,7 @@ import React from "react"; // peer-dependency
 import mitt from "mitt"; // DEPENDENCY #1
 import PropTypes from "prop-types"; // DEPENDENCY #2, sorta
 import uuidv1 from "uuid/v1";
-import { Map } from "immutable";
+import { OrderedMap } from "immutable";
 
 if (!PropTypes) console.warn("<react-native-portal> no PropTypes available");
 
@@ -25,7 +25,7 @@ export class PortalProvider extends React.PureComponent {
   static childContextTypes = oContextTypes;
 
   state = {
-    portals: Map()
+    portals: OrderedMap()
   };
 
   getChildContext() {
